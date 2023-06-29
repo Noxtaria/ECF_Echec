@@ -6,6 +6,7 @@ import com.example.ecf3echec.repository.MatchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -24,8 +25,8 @@ public class MatchService {
     }
 
     public List<Matches> getUpcomingMatches() {
-
-        return matchRepository.findUpcomingMatches();
+        LocalDateTime now = LocalDateTime.now();
+        return matchRepository.findByStartDateAfter(now);
     }
 
     public void updateMatchResult(Long matchId, String result) {
@@ -33,10 +34,5 @@ public class MatchService {
                 .orElseThrow(() -> new MatchNotFoundException("Match non trouvé avec l'ID : " + matchId));
         matches.setResult(result);
         matchRepository.save(matches);
-    }
-
-    public List<Matches> getMatchesByPlayer(String playerName) {
-
-        return matchRepository.findByPlayer(playerName);
     }
 }

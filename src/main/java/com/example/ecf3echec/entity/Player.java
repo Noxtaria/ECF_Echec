@@ -22,6 +22,10 @@ public class Player {
 
     private String name;
 
+    private String email;
+
+    private String password;
+
     public Player(String name) {
         this.name = name;
     }
@@ -41,4 +45,8 @@ public class Player {
     public void setName(String name) {
         this.name = name;
     }
+
+    private boolean admin;
+
+    private boolean active;
 }

@@ -2,7 +2,6 @@ package com.example.ecf3echec.entity;
 
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -13,14 +12,17 @@ public class Tournament {
     private Long id;
 
     private String name;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tournament")
-    private List<Matches> matches = new ArrayList<>();
+
+    @OneToMany(mappedBy = "tournament")
+    private List<Matches> matches;
+
 
     public Tournament() {
     }
 
-    public Tournament(String name) {
+    public Tournament(String name, List<Matches> matches) {
         this.name = name;
+        this.matches = matches;
     }
 
     public Long getId() {

@@ -1,20 +1,51 @@
 package com.example.ecf3echec.service;
 
 import com.example.ecf3echec.entity.Player;
+import com.example.ecf3echec.exception.PlayerFoundException;
+import com.example.ecf3echec.exception.PlayerNotActiveException;
 import com.example.ecf3echec.exception.PlayerNotFoundException;
 import com.example.ecf3echec.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PlayerService {
 
-    private final PlayerRepository playerRepository;
+    @Autowired
+    private PlayerRepository playerRepository;
 
     @Autowired
+    private LoginService loginService;
+
+    public boolean signUp(String name, String email, String password) throws PlayerFoundException {
+        try {
+            playerRepository.findByEmail(email);
+            throw new PlayerFoundException("Le joueur existe déjà dans le tournoi.");
+        }
+        catch (Exception ex) {
+            Player player = Player.builder().name(name).email(email).password(password).build();
+            playerRepository.save(player);
+            return player.getId() > 0;
+        }
+    }
+
+    public boolean signIn(String email, String password) throws PlayerNotFoundException {
+        try {
+            Player player = playerRepository.findByEmailAndPassword(email, password);
+            if (player.isActive()) {
+                return loginService.login(player);
+            }
+            throw new PlayerNotActiveException("Le joueur n'est pas actif dans le tournoi.");
+        } catch (PlayerNotActiveException ex) {
+            throw new PlayerNotFoundException("Joueur introuvable.");
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+
+
     public PlayerService(PlayerRepository playerRepository) {
         this.playerRepository = playerRepository;
     }

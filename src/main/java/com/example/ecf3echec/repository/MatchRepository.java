@@ -7,12 +7,20 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+import java.time.LocalDateTime;
+
+
 @Repository
 public interface MatchRepository extends CrudRepository<Matches, Long> {
 
-    public Optional<Matches> findById(Long matchId);
+    Optional<Matches> findById(Long matchId);
 
-    List<Matches> findByPlayer(String playerName);
+    List<Matches> findByPlayer1(String player);
 
-    List<Matches> findUpcomingMatches();
+    List<Matches> findByPlayer2(String player);
+
+    List<Matches> findByStartDateAfter(LocalDateTime startDate);
+
 }
+
+
