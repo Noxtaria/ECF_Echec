@@ -26,6 +26,8 @@ public class Player {
 
     private String password;
 
+    private Integer score;
+
     public Player(String name) {
         this.name = name;
     }
@@ -49,4 +51,5 @@ public class Player {
     private boolean admin;
 
     private boolean active;
+
 }

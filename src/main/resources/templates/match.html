@@ -1,10 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Upcoming Matches</title>
 </head>
 <body>
-
+<h1>Upcoming Matches</h1>
+<table>
+    <tr>
+        <th>Match ID</th>
+        <th>Player 1</th>
+        <th>Player 2</th>
+        <th>Date and Time</th>
+        <th>Result</th>
+        <th>Enter Result</th>
+    </tr>
+    <tr th:each="match : ${matches}">
+        <td th:text="${match.id}"></td>
+        <td th:text="${match.player1}"></td>
+        <td th:text="${match.player2}"></td>
+        <td th:text="${match.startDate}"></td>
+        <td th:text="${match.result}"></td>
+        <td>
+            <form th:action="@{/matches/{id}/result(match.id)}" method="post">
+                <input type="text" name="result">
+                <button type="submit">Submit</button>
+            </form>
+        </td>
+    </tr>
+</table>
 </body>
 </html>
