@@ -21,7 +21,7 @@
         <td th:text="${match.startDate}"></td>
         <td th:text="${match.result}"></td>
         <td>
-            <form th:action="@{/matches/{id}/result(match.id)}" method="post">
+            <form th:action="@{/match/{id}/result(matches.id)}" method="post">
                 <input type="text" name="result">
                 <button type="submit">Submit</button>
             </form>

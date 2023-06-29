@@ -52,6 +52,11 @@ public class LoginController {
         }
     }
 
+    @GetMapping("/logout")
+    public String logout() {
+        return "redirect:/login/signin";
+    }
+
 
     @ExceptionHandler({PlayerNotFoundException.class, PlayerFoundException.class})
     public String handlePlayerExceptions(Exception ex, RedirectAttributes redirectAttributes) {

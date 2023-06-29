@@ -35,4 +35,12 @@ public class MatchService {
         matches.setResult(result);
         matchRepository.save(matches);
     }
+
+    public List<Matches> getPreviousMatches() {
+
+        List<Matches> previousMatches = matchRepository.findPreviousMatches();
+
+        return previousMatches;
+    }
+
 }

@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -25,6 +26,10 @@ public class Matches {
 
     @Column(name = "start_date")
     private LocalDateTime startDate;
+
+    @OneToMany(mappedBy = "matches")
+    private List<Game> previousMatches;
+
 
     private String result;
 
