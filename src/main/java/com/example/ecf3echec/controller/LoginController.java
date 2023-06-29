@@ -3,62 +3,59 @@ package com.example.ecf3echec.controller;
 import com.example.ecf3echec.exception.PlayerFoundException;
 import com.example.ecf3echec.exception.PlayerNotFoundException;
 import com.example.ecf3echec.service.PlayerService;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-
-import java.io.IOException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("login")
+@RequestMapping("/login")
 public class LoginController {
 
-    @Autowired
-    private PlayerService playerService;
-    @Autowired
-    private HttpServletResponse response;
+    private final PlayerService playerService;
 
-    @GetMapping("signin")
-    public ModelAndView signIn() {
-        ModelAndView mv = new ModelAndView("signin");
-        return mv;
+    @Autowired
+    public LoginController(PlayerService playerService) {
+        this.playerService = playerService;
     }
 
-    @PostMapping("signin")
-    public String signUp(@RequestParam String email, @RequestParam String password) throws PlayerNotFoundException, IOException {
+    @GetMapping("/signin")
+    public String signIn(Model model) {
+        model.addAttribute("error", "");
+        return "signin";
+    }
+
+    @PostMapping("/signin")
+    public String signUp(@RequestParam String email, @RequestParam String password, RedirectAttributes redirectAttributes) throws PlayerNotFoundException {
         if (playerService.signIn(email, password)) {
             return "redirect:/";
         }
-        return null;
-    }
-
-    @ExceptionHandler(PlayerNotFoundException.class)
-    public ModelAndView handlePlayerNotFound(PlayerNotFoundException ex) {
-        ModelAndView mv = new ModelAndView("signin");
-        mv.addObject("message", ex.getMessage());
-        return mv;
+        redirectAttributes.addFlashAttribute("error", "Invalid email or password");
+        return "redirect:/login/signin";
     }
 
     @GetMapping("signup")
-    public ModelAndView postSignIn() {
-        ModelAndView mv = new ModelAndView("signup");
-        return mv;
+    public String signUpForm(Model model) {
+        model.addAttribute("error", "");
+        return "signup";
     }
 
-    @PostMapping("signup")
-    public String postSignUp(@RequestParam String name, @RequestParam String email, @RequestParam String password) throws PlayerFoundException, IOException {
-        if (playerService.signUp(name, email, password)) {
-            return "redirect:/user/signin";
+    @PostMapping("/signup")
+    public String postSignUp(@RequestParam String name, @RequestParam String email, @RequestParam String password, RedirectAttributes redirectAttributes) throws PlayerFoundException {
+        try {
+            playerService.createPlayer(name, email, password);
+            return "redirect:/login/signin";
+        } catch (PlayerFoundException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/login/signup";
         }
-        return null;
     }
 
-    @ExceptionHandler(PlayerFoundException.class)
-    public ModelAndView handlePlayerFound(PlayerFoundException ex) {
-        ModelAndView mv = new ModelAndView("signup");
-        mv.addObject("message", ex.getMessage());
-        return mv;
+
+    @ExceptionHandler({PlayerNotFoundException.class, PlayerFoundException.class})
+    public String handlePlayerExceptions(Exception ex, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("error", ex.getMessage());
+        return "redirect:/login/signin";
     }
 }

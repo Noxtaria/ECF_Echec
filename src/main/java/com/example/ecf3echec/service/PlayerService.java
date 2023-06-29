@@ -50,10 +50,19 @@ public class PlayerService {
         this.playerRepository = playerRepository;
     }
 
-    public Player createPlayer(String name) {
-        Player player = new Player(name);
+    public Player createPlayer(String name, String email, String password) throws PlayerFoundException {
+        if (playerRepository.findByEmail(email) != null) {
+            throw new PlayerFoundException("Un joueur avec cet email existe déjà.");
+        }
+
+        Player player = new Player();
+        player.setName(name);
+        player.setEmail(email);
+        player.setPassword(password);
+
         return playerRepository.save(player);
     }
+
 
     public List<Player> getAllPlayers() {
         return (List<Player>) playerRepository.findAll();
@@ -65,6 +74,12 @@ public class PlayerService {
     }
 
 
-
+    public void updatePlayer(Player updatedPlayer) {
+        Player existingPlayer = playerRepository.findById(updatedPlayer.getId())
+                .orElseThrow(() -> new PlayerNotFoundException("Joueur introuvable."));
+        existingPlayer.setName(updatedPlayer.getName());
+        existingPlayer.setEmail(updatedPlayer.getEmail());
+        playerRepository.save(existingPlayer);
+    }
 }
 

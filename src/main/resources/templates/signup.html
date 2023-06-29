@@ -8,8 +8,8 @@
 <body>
 <div class="container mt-5">
     <h2 class="text-center">Sign up</h2>
-    <form action="@{/user/signup}" method="post">
-        <div th:if="${message != null}" class="alert alert-danger">
+    <form th:action="@{/login/signup}" method="post">
+    <div th:if="${message != null}" class="alert alert-danger">
             <div th:text="${message}"></div>
         </div>
         <div class="form-group">
@@ -22,7 +22,7 @@
             <input type="password" name="password" placeholder="Votre mot de passe" class="form-control">
         </div>
         <div class="form-group">
-            <button class="btn btn-primary btn-block">Sign Up</button>
+            <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
         </div>
     </form>
 </div>
