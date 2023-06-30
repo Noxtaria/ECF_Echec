@@ -49,7 +49,7 @@
             <h4>Résultats des matches précédents</h4>
             <ul class="list-group">
                 <c:forEach var="match" items="${previousMatches}">
-                    <li class="list-group-item">Match ${match.id} : ${match.player1} vs ${match.player2} - ${match.result}</li>
+                    <li class="list-group-item">Match ${match.id} : ${match.getPlayer1()} vs ${match.getPlayer2()} - ${match.result}</li>
                 </c:forEach>
             </ul>
         </div>

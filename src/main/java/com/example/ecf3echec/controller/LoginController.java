@@ -1,6 +1,7 @@
 package com.example.ecf3echec.controller;
 
 import com.example.ecf3echec.exception.PlayerFoundException;
+import com.example.ecf3echec.exception.PlayerNotActiveException;
 import com.example.ecf3echec.exception.PlayerNotFoundException;
 import com.example.ecf3echec.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,24 +28,32 @@ public class LoginController {
     }
 
     @PostMapping("/signin")
-    public String signUp(@RequestParam String email, @RequestParam String password, RedirectAttributes redirectAttributes) throws PlayerNotFoundException {
-        if (playerService.signIn(email, password)) {
-            return "redirect:/";
+    public String signIn(@RequestParam String email, @RequestParam String password, RedirectAttributes redirectAttributes) {
+        try {
+            if (playerService.signIn(email, password)) {
+                return "redirect:/";
+            } else {
+                throw new PlayerNotActiveException("Player is not active in the tournament");
+            }
+        } catch (PlayerNotFoundException e) {
+            redirectAttributes.addFlashAttribute("error", "Player not found");
+            return "redirect:/login/signin";
+        } catch (PlayerNotActiveException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/login/signin";
         }
-        redirectAttributes.addFlashAttribute("error", "Invalid email or password");
-        return "redirect:/login/signin";
     }
 
-    @GetMapping("signup")
+    @GetMapping("/signup")
     public String signUpForm(Model model) {
         model.addAttribute("error", "");
         return "signup";
     }
 
     @PostMapping("/signup")
-    public String postSignUp(@RequestParam String name, @RequestParam String email, @RequestParam String password, RedirectAttributes redirectAttributes) throws PlayerFoundException {
+    public String postSignUp(@RequestParam String name, @RequestParam String email, @RequestParam String password, RedirectAttributes redirectAttributes) {
         try {
-            playerService.createPlayer(name, email, password);
+            playerService.signUp(name, email, password);
             return "redirect:/login/signin";
         } catch (PlayerFoundException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -58,7 +67,7 @@ public class LoginController {
     }
 
 
-    @ExceptionHandler({PlayerNotFoundException.class, PlayerFoundException.class})
+    @ExceptionHandler({PlayerNotFoundException.class, PlayerFoundException.class, PlayerNotActiveException.class})
     public String handlePlayerExceptions(Exception ex, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("error", ex.getMessage());
         return "redirect:/login/signin";
